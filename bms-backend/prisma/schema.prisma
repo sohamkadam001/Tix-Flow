@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum EventCategory {
+  COMEDY
+  MUSIC
+  SPORTS
+  THEATER_PLAY
+  OTHER
+}
+
+enum SpaceType {
+  SCREEN
+  STAGE
+  STADIUM
+}
+
+enum SeatCategory {
+  VIP
+  PREMIUM
+  REGULAR
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  isVerified    Boolean   @default(false)
+  otp           String?
+  otpExpiresAt  DateTime?
+  createdAt     DateTime  @default(now())
+  booking       Booking[]
+  role          Role      @default(USER)
+}
+
+model Venue {
+  id       String @id @default(uuid())
+  name     String
+  location String
+
+  auditoriums Auditorium[]
+}
+
+model Auditorium {
+  id   String    @id @default(uuid())
+  name String
+  type SpaceType @default(SCREEN)
+
+  venueId String
+  venue   Venue  @relation(fields: [venueId], references: [id])
+
+  shows Show[]
+  seats Seat[]
+}
+
+model Seat {
+  id     String @id @default(uuid())
+  row    String
+  number Int
+  tier         SeatCategory   @default(REGULAR)
+  auditoriumId String
+  auditorium   Auditorium @relation(fields: [auditoriumId], references: [id])
+
+  category SeatCategory @default(REGULAR)
+
+  tickets Ticket[]
+}
+
+model Movie {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  durationMin Int
+  language    String
+  posterUrl   String
+  shows       Show[]
+}
+
+model Event {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  artist      String
+  category    EventCategory
+  durationMin Int
+  posterUrl   String
+  shows       Show[]
+}
+
+model Show {
+  id        String   @id @default(uuid())
+  startTime DateTime
+  regularPrice Int        
+  premiumPrice  Int   
+  vipPrice      Int?
+  movieId String?
+  movie   Movie?  @relation(fields: [movieId], references: [id])
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id])
+
+  auditoriumId String
+  auditorium   Auditorium @relation(fields: [auditoriumId], references: [id])
+
+  bookings Booking[]
+}
+
+model Booking {
+  id     String @id @default(uuid())
+  status String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  showId String
+  show   Show   @relation(fields: [showId], references: [id])
+
+  tickets Ticket[]
+}
+
+model Ticket {
+  id String @id @default(uuid())
+
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  seatId String
+  seat   Seat   @relation(fields: [seatId], references: [id])
+
+  @@unique([seatId, bookingId])
+}
