@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 
 const API_BASE_URL = 'http://localhost:3001/api/v1';
 
-// --- Premium Animation Constants ---
 const luxEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const textContainerVariant: Variants = {
@@ -20,25 +19,42 @@ const textItemVariant: Variants = {
   hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
   show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.2, ease: luxEase } }
 };
-
-// --- Unified Event Data Structure ---
 const events = [
   {
-  title: "Interstellar",
-    synopsis: "Cooper, a former pilot turned farmer, who leaves his children to lead a NASA mission through a wormhole to find a new, habitable planet for humanity as Earth dies from environmental collapse.",
+    title: "Interstellar",
+    synopsis: "Cooper, a former pilot turned farmer, leaves his children to lead a NASA mission through a wormhole to find a new habitable planet for humanity.",
     date: "Nov 07, 2026",
+    showId: "94206fd2-88a4-402e-8d1e-a16bb71fbd77",
     location: "Sphere, LV",
-    genres: ["Alternative Rock", "Pop", "Spectacle", "Concert"],
+    genres: ["Sci-Fi", "Epic", "Adventure", "Drama"],
     imageUrl: "https://images3.alphacoders.com/551/551456.jpg",
-    gradientText: "from-green-400 to-emerald-400",
-    bgColor: "bg-green-900/10",
-    borderColor: "border-green-500/20",
-    badgeColor: "text-green-300",
-    iconColor: "text-green-400",
-    navBgActive: "bg-green-500/20",
-    navTextActive: "text-green-400",
-    pulseColor: "bg-green-500",
-    selectionColor: "selection:bg-green-500/30"
+    gradientText: "from-cyan-400 to-blue-500",
+    bgColor: "bg-cyan-900/10",
+    borderColor: "border-cyan-500/30",
+    badgeColor: "text-cyan-300",
+    iconColor: "text-cyan-400",
+    navBgActive: "bg-cyan-500/20",
+    navTextActive: "text-cyan-400",
+    pulseColor: "bg-cyan-500",
+    selectionColor: "selection:bg-cyan-500/30"
+  },
+  {
+    title: "Inception",
+    synopsis: "A thief's dream-sharing skills are used to implant an idea in a CEO's mind, but his troubled past threatens the mission.",
+    date: "Nov 07, 2026",
+    showId: "1112c1db-c667-4207-9b3c-7f8fe93770fc",
+    location: "Sphere, LV",
+    genres: ["Sci-Fi", "Thriller", "Action", "Mind-Bending"],
+    imageUrl: "https://w0.peakpx.com/wallpaper/289/913/HD-wallpaper-movie-inception-ellen-page-joseph-gordon-levitt-leonardo-dicaprio-tom-hardy.jpg",
+    gradientText: "from-indigo-300 to-blue-500",
+    bgColor: "bg-indigo-900/10",
+    borderColor: "border-indigo-500/30",
+    badgeColor: "text-indigo-300",
+    iconColor: "text-indigo-400",
+    navBgActive: "bg-indigo-500/20",
+    navTextActive: "text-indigo-300",
+    pulseColor: "bg-indigo-500",
+    selectionColor: "selection:bg-indigo-500/30"
   },
   {
     title: "SAMAY RAINA\nSTILL",
@@ -49,20 +65,20 @@ const events = [
     location: "Mumbai Arena",
     genres: ["Live Music", "Concert", "Electric", "Performance"],
     imageUrl: "https://i.ytimg.com/vi/LhpZJwUboeI/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC6-qKzAZhjIUJ1UkbQQjCRiJX1Cw",
-    gradientText: "from-red-500 to-red-600",
-    bgColor: "bg-fuchsia-900/10",
-    borderColor: "border-fuchsia-500/20",
-    badgeColor: "text-fuchsia-300",
-    iconColor: "text-fuchsia-400",
-    navBgActive: "bg-fuchsia-500/20",
-    navTextActive: "text-fuchsia-400",
-    pulseColor: "bg-fuchsia-500",
-    selectionColor: "selection:bg-fuchsia-500/30"
+    gradientText: "from-red-500 to-red-700",
+    bgColor: "bg-red-900/10",
+    borderColor: "border-red-500/30",
+    badgeColor: "text-red-400",
+    iconColor: "text-red-600",
+    navBgActive: "bg-red-500/20",
+    navTextActive: "text-red-500",
+    pulseColor: "bg-red-600",
+    selectionColor: "selection:bg-red-500/30"
   },
   {
     title: "Dhurandhar The",
     titleAccent: "Revenge",
-      showId: "5f997d79-ff6a-4cc3-82f7-5a5414937c7e",
+    showId: "5f997d79-ff6a-4cc3-82f7-5a5414937c7e",
     synopsis: "Arrakis comes to life in a breathtaking live orchestral and vocal performance, set against the backdrop of the blockbuster film.",
     date: "Dec 12, 2026",
     location: "Sanskriti Hall",
@@ -110,24 +126,19 @@ export default function TixFlowDashboard() {
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-
-  // User Authentication State
   const [user, setUser] = useState<UserProfile | null>(null);
   const [trendingShows, setTrendingShows] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const [isLoadingShows, setIsLoadingShows] = useState(true);
-
-  // --- Fetch User Details on Mount ---
   useEffect(() => {
     setIsLoaded(true);
 
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
-        router.push('/signin'); // Redirect to login if no token
+        router.push('/signin');
         return;
       }
-
       try {
         const res = await fetch(`${API_BASE_URL}/auth/me`, {
           headers: {
@@ -135,14 +146,10 @@ export default function TixFlowDashboard() {
             'Content-Type': 'application/json'
           }
         });
-
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
         } else {
-          // Token might be expired
-          //   localStorage.removeItem('token');
-          //   router.push('/auth');
           const errorData = await res.json();
           console.error("ME ROUTE FAILED:", res.status, errorData);
         }
@@ -150,34 +157,29 @@ export default function TixFlowDashboard() {
         console.error("Failed to fetch user:", error);
       }
     };
-
     fetchUser();
   }, [router]);
-
-
   useEffect(() => {
     setMounted(true);
     const fetchTrendingShows = async () => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/shows`); 
+      try {
+        const res = await fetch(`${API_BASE_URL}/shows`);
         const data = await res.json();
-        
-        console.log("BACKEND RAW DATA:", data); 
-        
+
+        console.log("BACKEND RAW DATA:", data);
+
         if (res.ok) {
-          // NOW we look for data.shows because we fixed the backend!
           const validArray = Array.isArray(data.shows) ? data.shows : [];
-          setTrendingShows(validArray); 
+          setTrendingShows(validArray);
         }
       } catch (err) {
         console.error("Failed to fetch trending shows:", err);
-      }finally {
+      } finally {
         setIsLoadingShows(false);
       }
     };
     fetchTrendingShows();
   }, []);
-
   const handleCardClick = (showId: string) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -188,14 +190,10 @@ export default function TixFlowDashboard() {
   };
   const handleHeroBookClick = () => {
     const token = localStorage.getItem('token');
-    
-    // 1. Not logged in? Send to auth.
     if (!token) {
       router.push('/auth?mode=signin');
       return;
     }
-
-    // 2. Is there a valid ID linked? Send to the seating matrix!
     if (currentEvent.showId) {
       router.push(`/booking/${currentEvent.showId}`);
     } else {
@@ -203,7 +201,6 @@ export default function TixFlowDashboard() {
     }
   };
 
-  // --- Auto-Play Logic ---
   useEffect(() => {
     if (!isLoaded || isPaused) return;
     const intervalId = setInterval(() => {
@@ -228,8 +225,6 @@ export default function TixFlowDashboard() {
     <div className={`min-h-screen bg-[#030303] text-white font-sans overflow-x-hidden ${currentEvent.selectionColor}`}>
 
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none bg-[url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Dissolve_Noise_Texture.png')]" />
-
-      {/* --- PROMINENT BRANDING HEADER --- */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -245,8 +240,6 @@ export default function TixFlowDashboard() {
 
         <div className="flex items-center gap-6 pointer-events-auto">
           <button className="text-sm font-semibold text-white/70 hover:text-white transition-colors">Support</button>
-
-          {/* FUNCTIONAL USER PROFILE DROPDOWN */}
           <div className="relative group pt-2 pb-2">
             <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/20 transition-all backdrop-blur-md overflow-hidden">
               {user ? (
@@ -255,8 +248,6 @@ export default function TixFlowDashboard() {
                 <User size={18} />
               )}
             </div>
-
-            {/* Dropdown Menu - Appears on Hover */}
             {user && (
               <div className="absolute right-0 mt-2 w-64 bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0">
                 <div className="flex flex-col gap-1 mb-4 pb-4 border-b border-white/10">
@@ -279,8 +270,6 @@ export default function TixFlowDashboard() {
           </div>
         </div>
       </motion.header>
-
-      {/* Floating Glassmorphic Navigation */}
       <motion.nav
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -291,25 +280,19 @@ export default function TixFlowDashboard() {
         <NavItem icon={<Search size={22} />} tooltip="Search" eventTheme={currentEvent} />
         <NavItem icon={<Flame size={22} />} tooltip="Trending" eventTheme={currentEvent} />
         <div className="w-6 h-[1px] bg-white/10 my-1" />
-        <div 
-  onClick={() => router.push('/dashboard/tickets')} 
-  className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer group relative"
->
-  {/* Assuming you are using the Ticket icon from lucide-react */}
-  <Ticket className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
-  
-  {/* This is the little tooltip that pops up */}
-  <div className="absolute left-16 bg-[#1a1a1a] text-white text-sm font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
-    My Tickets
-  </div>
-</div>
+        <div
+          onClick={() => router.push('/dashboard/tickets')}
+          className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer group relative"
+        >
+          <Ticket className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
+          <div className="absolute left-16 bg-[#1a1a1a] text-white text-sm font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+            My Tickets
+          </div>
+        </div>
       </motion.nav>
-
       <main className="relative">
         <div
           className="relative w-full h-screen min-h-[800px] overflow-hidden"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
         >
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -339,6 +322,8 @@ export default function TixFlowDashboard() {
               animate="show"
               exit="exit"
               className="absolute left-32 top-[55%] -translate-y-1/2 w-full max-w-3xl z-10"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
             >
               <motion.div variants={textItemVariant} className={`inline-flex items-center gap-3 mb-8 ${currentEvent.bgColor} border ${currentEvent.borderColor} px-5 py-2.5 rounded-full backdrop-blur-xl shadow-2xl`}>
                 <span className={`w-2 h-2 rounded-full ${currentEvent.pulseColor} animate-pulse`} />
@@ -415,18 +400,14 @@ export default function TixFlowDashboard() {
             </button>
           </div>
 
-         <div className="flex gap-6 overflow-x-auto pb-8 pt-4 scrollbar-hide">
-            
-            {/* 1. Show sleek loading blocks if fetching or waking up DB */}
+          <div className="flex gap-6 overflow-x-auto pb-8 pt-4 scrollbar-hide">
             {isLoadingShows && (
-               <>
-                 {[1, 2, 3].map((skeleton) => (
-                   <div key={skeleton} className="w-[280px] h-[400px] flex-shrink-0 bg-white/5 animate-pulse rounded-2xl border border-white/10" />
-                 ))}
-               </>
+              <>
+                {[1, 2, 3].map((skeleton) => (
+                  <div key={skeleton} className="w-[280px] h-[400px] flex-shrink-0 bg-white/5 animate-pulse rounded-2xl border border-white/10" />
+                ))}
+              </>
             )}
-
-            {/* 2. Show the real cards once data is here */}
             {!isLoadingShows && trendingShows?.map((show, idx) => {
               const tagColors = ["text-green-400", "text-orange-400", "text-red-400"];
               const tagLabels = ["Available", "Fast Filling", "Almost Full"];
@@ -434,13 +415,13 @@ export default function TixFlowDashboard() {
 
               return (
                 <motion.div
-                  key={show.id} 
+                  key={show.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.5 }}
                   transition={{ delay: idx * 0.1 }}
                   className="w-[280px] group flex-shrink-0 cursor-pointer"
-                  onClick={() => handleCardClick(show.id)} 
+                  onClick={() => handleCardClick(show.id)}
                 >
                   <motion.div
                     whileHover={{ y: -10, scale: 1.02 }}
@@ -466,16 +447,13 @@ export default function TixFlowDashboard() {
                       </h3>
                       <div className="flex items-center gap-5 text-sm text-gray-400">
                         <p className="flex items-center gap-1.5 truncate max-w-[120px]">
-                          <MapPin size={14} className="shrink-0" /> 
+                          <MapPin size={14} className="shrink-0" />
                           <span className="truncate">{show.auditorium.venue.location}</span>
                         </p>
-                        
-                        {/* 👉 HYDRATION FIX: Only render the date if mounted to prevent server/client mismatch */}
                         <p className="flex items-center gap-1.5 shrink-0">
-                          <Clock size={14} /> 
+                          <Clock size={14} />
                           {mounted ? new Date(show.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "--"}
                         </p>
-
                       </div>
                     </div>
                   </motion.div>

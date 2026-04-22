@@ -44,10 +44,7 @@ export default function AdminSetup() {
 
   return (
     <div className="min-h-screen bg-[#030303] flex items-center justify-center p-6 selection:bg-fuchsia-500/30 relative">
-      {/* Background Texture */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none bg-[url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Dissolve_Noise_Texture.png')]" />
-
-      {/* Brand Navigation */}
       <nav className="absolute top-0 left-0 w-full p-8 z-50 flex justify-center md:justify-start">
         <button 
           onClick={() => router.push('/')}
@@ -67,11 +64,8 @@ export default function AdminSetup() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="relative z-10 w-full max-w-md mt-16 md:mt-0"
       >
-        {/* Subtle background glow */}
         <div className="absolute inset-0 bg-fuchsia-500/10 blur-[100px] pointer-events-none rounded-full" />
-
         <div className="bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl relative p-8 sm:p-10">
-          
           <div className="flex flex-col items-center text-center mb-10">
             <h1 className="text-3xl font-black text-white tracking-tight mb-2">Admin Setup</h1>
             <p className="text-gray-400 text-sm">Authorize an account for infrastructure access.</p>

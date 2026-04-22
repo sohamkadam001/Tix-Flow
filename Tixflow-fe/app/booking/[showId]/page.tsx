@@ -7,11 +7,11 @@ import { useRouter, useParams } from 'next/navigation';
 
 const API_BASE_URL = 'http://localhost:3001/api/v1';
 
-type SeatStatus = 'AVAILABLE' | 'LOCKED' | 'SELECTED'; 
+type SeatStatus = 'AVAILABLE' | 'LOCKED' | 'SELECTED';
 
 interface Seat {
-  id: string;        
-  displayId: string; 
+  id: string;
+  displayId: string;
   row: string;
   number: number;
   tier: string;
@@ -23,21 +23,16 @@ export default function BookingEngine() {
   const router = useRouter();
   const params = useParams();
   const showId = params.showId as string;
-
   const [seats, setSeats] = useState<Seat[]>([]);
-  const [showInfo, setShowInfo] = useState<any>(null); // State for real database info
+  const [showInfo, setShowInfo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
   const selectedSeats = seats.filter(s => s.status === 'SELECTED');
   const subtotal = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
   const serviceFee = selectedSeats.length > 0 ? 150 : 0;
   const total = subtotal + serviceFee;
-
-  // Dynamically extract all unique rows from the database (e.g. A, B, C, D, E, F...)
   const arenaRows = Array.from(new Set(seats.map(s => s.row))).sort();
 
   useEffect(() => {
@@ -47,24 +42,18 @@ export default function BookingEngine() {
       try {
         const res = await fetch(`${API_BASE_URL}/shows/${showId}/seats`);
         if (!res.ok) throw new Error("Failed to load seating chart.");
-        
+
         const data = await res.json();
-        
-        // Save the dynamic show details from the backend!
         setShowInfo(data.showDetails);
-        
-        // Map database seats, applying the real pricing
         const mappedSeats: Seat[] = data.seatingMatrix.map((s: any) => ({
           id: s.id,
           displayId: `${s.row}${s.number}`,
           row: s.row,
           number: s.number,
-          tier: s.category, // 'VIP', 'PREMIUM', or 'REGULAR'
+          tier: s.category,
           status: s.isBooked ? 'LOCKED' : 'AVAILABLE',
-          // Match the category to the exact price you set in the Admin portal
           price: data.showDetails.prices[s.category] || data.showDetails.prices.REGULAR
         }));
-
         setSeats(mappedSeats);
       } catch (err: any) {
         setErrorMsg(err.message);
@@ -72,22 +61,17 @@ export default function BookingEngine() {
         setIsLoading(false);
       }
     };
-
     fetchSeats();
   }, [showId]);
 
   const handleSeatClick = async (seatId: string) => {
-    if (isSuccess || isProcessing) return; 
+    if (isSuccess || isProcessing) return;
     setErrorMsg(null);
-
     const token = localStorage.getItem('token');
     if (!token) return router.push('/auth?mode=signin');
-
     const clickedSeat = seats.find(s => s.id === seatId);
     if (!clickedSeat) return;
-
     if (clickedSeat.status === 'SELECTED') {
-      // Local deselect (Redis will just let the lock expire, or you can re-select safely now)
       setSeats(prev => prev.map(s => s.id === seatId ? { ...s, status: 'AVAILABLE' } : s));
       return;
     }
@@ -110,7 +94,6 @@ export default function BookingEngine() {
           setErrorMsg(data.error);
           return;
         }
-
         setSeats(prev => prev.map(s => s.id === seatId ? { ...s, status: 'SELECTED' } : s));
       } catch (err: any) {
         setErrorMsg("Network error while reserving seat.");
@@ -120,13 +103,13 @@ export default function BookingEngine() {
 
   const handleCheckout = async () => {
     if (selectedSeats.length === 0) return;
-    
+
     const token = localStorage.getItem('token');
     if (!token) return router.push('/auth?mode=signin');
 
     setIsProcessing(true);
     setErrorMsg(null);
-    
+
     setTimeout(async () => {
       try {
         const seatIds = selectedSeats.map(s => s.id);
@@ -187,7 +170,6 @@ export default function BookingEngine() {
       </nav>
 
       <main className="relative z-10 max-w-[1400px] mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
         <div className="lg:col-span-8 flex flex-col">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
             <div>
@@ -215,26 +197,24 @@ export default function BookingEngine() {
                 </div>
               </div>
             </div>
-
-            {/* DYNAMIC ROW RENDERING */}
             <div className={`flex flex-col gap-6 items-center min-w-max transition-opacity duration-500 ${isSuccess ? 'opacity-50 pointer-events-none' : ''}`}>
               {arenaRows.map(row => (
                 <div key={row as string} className="flex gap-4 items-center">
                   <div className="w-6 text-center text-sm font-bold text-gray-600 mr-4">{row as string}</div>
                   <div className="flex gap-3">
                     {seats.filter(s => s.row === row).map((seat, idx) => (
-                       <React.Fragment key={seat.id}>
-                          {idx === Math.floor(seats.filter(s => s.row === row).length / 2) && <div className="w-8" />} 
-                          <motion.button
-                            whileHover={seat.status !== 'LOCKED' ? { scale: 1.1 } : {}}
-                            whileTap={seat.status !== 'LOCKED' ? { scale: 0.95 } : {}}
-                            onClick={() => handleSeatClick(seat.id)}
-                            disabled={seat.status === 'LOCKED'}
-                            className={`w-10 h-10 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${getSeatStyles(seat)}`}
-                          >
-                            {seat.displayId}
-                          </motion.button>
-                       </React.Fragment>
+                      <React.Fragment key={seat.id}>
+                        {idx === Math.floor(seats.filter(s => s.row === row).length / 2) && <div className="w-8" />}
+                        <motion.button
+                          whileHover={seat.status !== 'LOCKED' ? { scale: 1.1 } : {}}
+                          whileTap={seat.status !== 'LOCKED' ? { scale: 0.95 } : {}}
+                          onClick={() => handleSeatClick(seat.id)}
+                          disabled={seat.status === 'LOCKED'}
+                          className={`w-10 h-10 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${getSeatStyles(seat)}`}
+                        >
+                          {seat.displayId}
+                        </motion.button>
+                      </React.Fragment>
                     ))}
                   </div>
                   <div className="w-6 text-center text-sm font-bold text-gray-600 ml-4">{row as string}</div>
@@ -265,9 +245,9 @@ export default function BookingEngine() {
 
         <div className="lg:col-span-4">
           <div className="bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden sticky top-24 shadow-2xl">
-            
+
             <div className="relative h-48 w-full border-b border-white/10">
-              <img src={showInfo.image} alt={showInfo.title} className="w-full h-full object-cover opacity-60" />
+              <img src={showInfo.image} alt={showInfo.title} className="w-full h-full object-cover object-[center_20%] opacity-60" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
             </div>
 
@@ -321,12 +301,12 @@ export default function BookingEngine() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       disabled={selectedSeats.length === 0 || isProcessing}
                       onClick={handleCheckout}
                       className="w-full bg-white text-black font-extrabold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                     >
-                      {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />} 
+                      {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
                       {isProcessing ? "Processing Securely..." : "Proceed to Payment"}
                     </button>
                   </motion.div>
@@ -339,7 +319,7 @@ export default function BookingEngine() {
                     <p className="text-gray-400 text-sm mb-8 leading-relaxed">
                       You have securely booked <span className="text-white font-bold">{selectedSeats.length} ticket(s)</span> for {showInfo.title}. Your receipt has been sent to your registered email.
                     </p>
-                    <button 
+                    <button
                       onClick={() => router.push('/dashboard')}
                       className="w-full bg-white/10 border border-white/20 text-white font-bold py-4 rounded-xl hover:bg-white/20 transition-colors"
                     >

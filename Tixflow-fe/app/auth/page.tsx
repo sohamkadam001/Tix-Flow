@@ -4,9 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Mail, Lock, User, KeyRound, ArrowRight, Ticket, CheckCircle2, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-
-// Update this to point to your Express backend URL
-const API_BASE_URL = 'http://localhost:3001/api/v1/auth'; 
+const API_BASE_URL = 'http://localhost:3001/api/v1/auth';
 
 type ViewState = 'signin' | 'signup' | 'otp';
 
@@ -20,12 +18,8 @@ export default function TixFlowAuth() {
     (mode === 'signup' || mode === 'signin') ? mode : 'signin'
   );
   const [loading, setLoading] = useState(false);
-  
-  // States for UI
   const [devOtp, setDevOtp] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  // Form States
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,14 +29,12 @@ export default function TixFlowAuth() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(null); 
+    setError(null);
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  // --- API Integrations ---
 
   const handleSignup = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -65,17 +57,13 @@ export default function TixFlowAuth() {
       if (!res.ok) throw new Error(data.error || 'Signup failed');
 
       setSuccess(data.message);
-      
-      // Capture the dev OTP from the response
       if (data.devOtp) {
-          setDevOtp(data.devOtp);
+        setDevOtp(data.devOtp);
       }
-
       setTimeout(() => {
         setSuccess(null);
-        setView('otp'); 
+        setView('otp');
       }, 1500);
-
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -113,9 +101,9 @@ export default function TixFlowAuth() {
 
       localStorage.setItem('token', data.token);
       setSuccess("Welcome back to the front row.");
-      
+
       setTimeout(() => {
-        router.push('/dashboard'); 
+        router.push('/dashboard');
       }, 1500);
 
     } catch (err: any) {
@@ -145,13 +133,11 @@ export default function TixFlowAuth() {
       if (!res.ok) throw new Error(data.error || 'Verification failed');
 
       setSuccess("Account verified successfully! You can now sign in.");
-      
-      // Clear development OTP on success
-      setDevOtp(null); 
+      setDevOtp(null);
 
       setTimeout(() => {
         setSuccess(null);
-        setFormData({ ...formData, password: '', otp: '' }); 
+        setFormData({ ...formData, password: '', otp: '' });
         setView('signin');
       }, 2000);
 
@@ -173,14 +159,11 @@ export default function TixFlowAuth() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to resend');
-      
-      setSuccess("A new OTP has been sent to your email.");
-      
-      // Update dev OTP if it comes back
-      if (data.devOtp) {
-         setDevOtp(data.devOtp);
-      }
 
+      setSuccess("A new OTP has been sent to your email.");
+      if (data.devOtp) {
+        setDevOtp(data.devOtp);
+      }
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -198,22 +181,16 @@ export default function TixFlowAuth() {
 
   return (
     <div className="min-h-screen bg-[#030303] text-white flex items-center justify-center relative overflow-hidden font-sans selection:bg-fuchsia-500/30">
-      
-      {/* Cinematic Background */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none bg-[url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Dissolve_Noise_Texture.png')]" />
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-fuchsia-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Auth Card */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-md relative z-10"
       >
         <div className="bg-[#0a0a0a]/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-8 shadow-2xl shadow-fuchsia-900/20">
-          
-          {/* CENTERED PERSISTENT BRANDING */}
           <div className="flex flex-col items-center justify-center mb-8 cursor-pointer group" onClick={() => router.push('/')}>
             <div className="w-14 h-14 bg-fuchsia-500/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <Ticket className="w-8 h-8 text-fuchsia-400 transform -rotate-45" />
@@ -224,8 +201,6 @@ export default function TixFlowAuth() {
           </div>
 
           <AnimatePresence mode="wait">
-            
-            {/* SIGN IN VIEW */}
             {view === 'signin' && (
               <motion.div key="signin" variants={formVariants} initial="hidden" animate="visible" exit="exit">
                 <div className="mb-8 text-center">
@@ -268,8 +243,6 @@ export default function TixFlowAuth() {
                 </p>
               </motion.div>
             )}
-
-            {/* SIGN UP VIEW */}
             {view === 'signup' && (
               <motion.div key="signup" variants={formVariants} initial="hidden" animate="visible" exit="exit">
                 <div className="mb-8 text-center">
@@ -317,25 +290,21 @@ export default function TixFlowAuth() {
                 </p>
               </motion.div>
             )}
-
-            {/* OTP VERIFICATION VIEW */}
             {view === 'otp' && (
               <motion.div key="otp" variants={formVariants} initial="hidden" animate="visible" exit="exit" className="text-center">
                 <h2 className="text-2xl font-bold tracking-tight mb-2">Verify your Email</h2>
                 <p className="text-gray-400 text-sm mb-6">
                   We sent a 6-digit code to <span className="text-white font-medium">{formData.email || 'your email'}</span>.
                 </p>
-
-                {/* DEV OTP DISPLAY */}
                 {devOtp && (
-                  <motion.div 
-                    initial={{ scale: 0.9, opacity: 0 }} 
-                    animate={{ scale: 1, opacity: 1 }} 
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
                     className="mb-6 p-4 bg-fuchsia-500/10 border border-fuchsia-500/30 rounded-xl backdrop-blur-sm"
                   >
                     <p className="text-xs text-fuchsia-300 font-semibold uppercase tracking-widest mb-1">Code</p>
                     <p className="text-3xl font-mono tracking-[0.3em] text-white font-bold">{devOtp}</p>
-    
+
                   </motion.div>
                 )}
 
@@ -361,8 +330,6 @@ export default function TixFlowAuth() {
     </div>
   );
 }
-
-// Reusable Alert Component for Errors & Success
 function AlertBox({ error, success }: { error: string | null, success: string | null }) {
   if (!error && !success) return null;
   return (
