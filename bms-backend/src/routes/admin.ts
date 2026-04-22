@@ -3,9 +3,7 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { Middleware } from "../Middleware/middleware.js"
 import { adminMiddleware } from "../Middleware/adminMiddleware.js";
-
 const AdminRouter = express.Router();
-
 const createEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(10, "Description must be at least 10 characters"),
@@ -210,9 +208,9 @@ AdminRouter.get("/dropdown-data", Middleware, adminMiddleware, async (req, res) 
     const movies = await prisma.movie.findMany({
       select: { id: true, title: true }
     });
-    
+
     const auditoriums = await prisma.auditorium.findMany({
-      include: { venue: true } 
+      include: { venue: true }
     });
 
     res.status(200).json({ movies, auditoriums });

@@ -1,5 +1,5 @@
 import express from "express";
-import {prisma} from "../lib/prisma.js"; // Adjust path if needed
+import {prisma} from "../lib/prisma.js";
 
 const MovieRouter = express.Router();
 

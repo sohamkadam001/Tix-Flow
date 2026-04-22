@@ -59,10 +59,6 @@ AuthRouter.post("/signup", async (req, res) => {
       }
     })
     //resend integrate karna hai
-    console.log(`\n--- TIXFLOW OTP for ${email} ---`);
-    console.log(`CODE: ${otp}`);
-    console.log(`---------------------------------\n`);
-
     res.status(201).json({
       message: "Please verify your OTP to complete registration.",
       devOtp: otp
@@ -139,10 +135,10 @@ AuthRouter.post("/signin", async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-   const token = jwt.sign(
-  { userId: user.id, role: user.role },
-  process.env.JWT_SECRET!
-);
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET!
+    );
 
     res.status(200).json({
       message: "Signin successful",
@@ -175,8 +171,8 @@ AuthRouter.post("/resend-otp", async (req, res) => {
       return res.status(400).json({ error: "Account is already verified. Please sign in." });
     }
 
-   const newOtp = Math.floor(Math.random()*900000 + 100000).toString()
-   const newExpiry = new Date(Date.now() + 5 * 60 * 1000)
+    const newOtp = Math.floor(Math.random() * 900000 + 100000).toString()
+    const newExpiry = new Date(Date.now() + 5 * 60 * 1000)
 
 
     await prisma.user.update({
@@ -186,12 +182,7 @@ AuthRouter.post("/resend-otp", async (req, res) => {
         otpExpiresAt: newExpiry,
       },
     });
-
-    console.log(`\n--- FRESH OTP GENERATED FOR ${email} ---`);
-    console.log(`NEW CODE: ${newOtp}`);
-    console.log(`----------------------------------------\n`);
-
-    res.status(200).json({ message: "A new OTP has been sent to your email.", devOtp: newOtp});
+    res.status(200).json({ message: "A new OTP has been sent to your email.", devOtp: newOtp });
 
   } catch (error) {
     console.error("Resend OTP Error:", error);
@@ -212,8 +203,8 @@ AuthRouter.post("/make-admin", async (req, res) => {
       data: { role: "ADMIN" }
     });
 
-    res.status(200).json({ 
-      message: `${email} has been officially upgraded to ADMIN status!` 
+    res.status(200).json({
+      message: `${email} has been officially upgraded to ADMIN status!`
     });
 
   } catch (error) {
@@ -222,35 +213,28 @@ AuthRouter.post("/make-admin", async (req, res) => {
   }
 });
 
-AuthRouter.get("/me", Middleware,async (req, res) => {
+AuthRouter.get("/me", Middleware, async (req, res) => {
   try {
-    // The authMiddleware attached the userId to req
     const userId = req.userId;
 
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
-
-    // Find the user in the database
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
         name: true,
         email: true,
-        role: true, // Optional: if you have roles like ADMIN/USER
+        role: true,
         isVerified: true
-        // NEVER return the password field
       }
     });
 
     if (!user) {
       return res.status(404).json({ error: "User not found." });
     }
-
-    // Send the user data back to the frontend
     res.status(200).json({ user });
-
   } catch (error) {
     console.error("Fetch User Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
