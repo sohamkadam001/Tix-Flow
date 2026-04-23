@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Key, Mail, Loader2, CheckCircle2, Ticket, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1/auth';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1/auth';
 
 export default function AdminSetup() {
   const router = useRouter();

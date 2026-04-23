@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Mail, Lock, User, KeyRound, ArrowRight, Ticket, CheckCircle2, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-const API_BASE_URL = 'http://localhost:3001/api/v1/auth';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1/auth';
 
 type ViewState = 'signin' | 'signup' | 'otp';
 

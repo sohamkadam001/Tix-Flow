@@ -5,7 +5,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Search, MapPin, Calendar, Ticket, User, Play, ChevronLeft, ChevronRight, Compass, Flame, Clock, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1';
 
 const luxEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 

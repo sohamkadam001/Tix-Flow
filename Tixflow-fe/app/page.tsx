@@ -129,7 +129,7 @@ export default function TixFlowDynamic() {
 
     const fetchTrendingShows = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/v1/shows`);
+        const res = await fetch(`https://tix-flow-1.onrender.com/api/v1/shows`);
         const data = await res.json();
 
         if (res.ok) {

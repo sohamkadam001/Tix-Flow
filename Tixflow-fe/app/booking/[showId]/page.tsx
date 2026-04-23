@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Calendar as CalIcon, Clock, ChevronLeft, CreditCard, ShieldCheck, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1';
 
 type SeatStatus = 'AVAILABLE' | 'LOCKED' | 'SELECTED';
 

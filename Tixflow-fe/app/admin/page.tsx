@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, MapPin, Film, CalendarPlus, CheckCircle2, AlertCircle, Loader2, Plus, ChevronRight, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1/admin';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1/admin';
 
 type Tab = 'VENUE' | 'MOVIE' | 'SHOW';
 

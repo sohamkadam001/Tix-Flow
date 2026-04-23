@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Calendar, Clock, MapPin, ChevronRight, Loader2, Download, Share2, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const API_BASE_URL = 'http://localhost:3001/api/v1';
+const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1';
 interface SeatData {
   id: string;
   row: string;
