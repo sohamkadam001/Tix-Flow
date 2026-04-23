@@ -1,0 +1,1 @@
+{"root":["../src/index.ts","../src/middleware/adminmiddleware.ts","../src/middleware/middleware.ts","../src/lib/prisma.ts","../src/lib/redis.ts","../src/routes/admin.ts","../src/routes/auth.ts","../src/routes/booking.ts","../src/routes/events.ts","../src/routes/movies.ts","../src/routes/show.ts","../prisma.config.ts"],"version":"6.0.2"}
