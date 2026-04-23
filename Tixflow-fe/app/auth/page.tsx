@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Mail, Lock, User, KeyRound, ArrowRight, Ticket, CheckCircle2, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,7 +8,7 @@ const API_BASE_URL = 'https://tix-flow-1.onrender.com/api/v1/auth';
 
 type ViewState = 'signin' | 'signup' | 'otp';
 
-export default function TixFlowAuth() {
+function AuthContent() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -337,5 +337,16 @@ function AlertBox({ error, success }: { error: string | null, success: string | 
       {error ? <AlertCircle className="w-4 h-4 flex-shrink-0" /> : <CheckCircle2 className="w-4 h-4 flex-shrink-0" />}
       <p>{error || success}</p>
     </motion.div>
+  );
+}
+export default function TixFlowAuth() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#030303] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-fuchsia-500" />
+      </div>
+    }>
+      <AuthContent />
+    </Suspense>
   );
 }
